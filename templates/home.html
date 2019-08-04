@@ -74,27 +74,94 @@
     </tr>
   </thead>
 
-
   <tbody>
-{{ warning }}
+{% if warning %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  <strong ><center>{{ warning }}</center></strong>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endif %}
+{% if success %}
+<div class="alert alert-primary alert-dismissible fade show" role="alert">
+  <strong><center>{{ success }}</center></strong>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endif %}
+
+
 {% for key in content %}
     {% if key.已完成 %}
         <tr class="table-dark">
       <th class="text-dark" scope="row">{{ forloop.counter }}</th>
       <td class="text-dark" ><del>{{ key.待办事项 }}</del> </td>
       <td class="text-secondary">不可编辑</td>
-      <td><a href = "#">撤销</a> </td>
-      <td><a class="text-danger" herf = "">删除</a></td>
-    </tr>
+      <td><form method="post" action="{% url '划掉' forloop.counter%}">
+{#          <input name = 'condition'，type = 'hidden' value="已完成>#}
+           {% csrf_token %}
+           <button type="submit" class="btn btn-info btn-sm">撤销</button>
+       </form></td>
+        <td><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModalLong">
+          删除
+        </button></td>
+{#      <td><a href = "{% url '删除' forloop.counter %}">删除</a> </td>#}
+
+
+
+        </tr>
 
     {% else %}
        <tr>
       <th scope="row">{{ forloop.counter }}</th>
       <td>{{ key.待办事项 }}</td>
-      <td><a href = "{% url '编辑' %}">编辑</a> </td>
-      <td><a href = "#">划掉</a> </td>
-      <td><a href = "#">删除</a> </td>
+      <td><a href = "{% url '编辑' forloop.counter%}"><button type="submit" class="btn btn-primary btn-sm">编辑</button></a> </td>
+      <td><form method="post" action="{% url '划掉' forloop.counter%}">
+           {% csrf_token %}
+{#           <input name = 'condition'，type = 'hidden' value="已完成>#}
+           <button type="submit" class="btn btn-primary btn-sm">划掉</button>
+       </form></td>
+       <td><button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#exampleModalLong">
+        删除</button></td>
+
+{#           <td><a href = "#"><button type="submit" class="btn btn-primary btn-sm">划掉</button></a> </td>#}
+{#      <td><a href = "{% url '删除' forloop.counter%}">删除</a> </td>#}
+
+
+
+
+
+{#       <td><form method="post" action="{% url '删除' forloop.counter%}">#}
+{#           {% csrf_token %}#}
+{#           <button type="submit" class="btn btn-primary btn-sm">删除</button>#}
+{#       </form></td>#}
     </tr>
+
+     <!-- Modal -->
+<div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">请确认</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        确认要删除<strong>{{ key.待办事项  }}</strong>吗？
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">关闭</button>
+        <form method="post" action="{% url '删除' forloop.counter%}">
+           {% csrf_token %}
+           <button type="submit" class="btn btn-danger btn-sm">确认删除</button>
+       </form>
+      </div>
+    </div>
+  </div>
+</div>
     {% endif %}
 {% endfor %}
 
